@@ -1,0 +1,38 @@
+ul{
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+li{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  position: relative;
+img{
+  border-radius: 8px;
+  width: 70px;
+}  
+
+p{
+  max-width: 120px;
+  
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+button{
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+}
+.admin{
+top: 0.5rem;
+right: 1rem;
+  position: absolute;
+}

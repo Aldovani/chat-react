@@ -1,0 +1,70 @@
+#room {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  height: 100vh;
+}
+
+.header {
+  height: 3rem;
+  position: absolute;
+  width: 100%;
+  background: white;
+  top: 0;
+  color: black;
+}
+.list {
+  flex: 2;
+  color: white;
+  background: var(--second);
+  height: 100%;
+}
+
+.container-chat {
+  flex: 6;
+  height: 100%;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.chat {
+  flex: 1;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  & .user-equal{
+    align-self: flex-end ;
+
+  }
+}
+form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: 5rem;
+
+  .button {
+    height: 100%;
+    background: var(--button);
+    border-radius: 0;
+    &.icon {
+      width: 10%;
+    }
+  }
+}
+
+.chat-input {
+  width: 90%;
+  height: 100%;
+  padding: 0.5rem;
+
+  border: 0;
+
+  resize: none;
+  font: 400 1rem var(--poppins);
+}
