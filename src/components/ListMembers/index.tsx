@@ -3,12 +3,12 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { IoBan } from "react-icons/io5";
 import { database } from "../../services/firebase";
-import { RiAdminLine } from "react-icons/ri";
 import { CgUnblock } from "react-icons/cg";
 import "./styles.scss";
 import { useRoom } from "../../hooks/useRoom";
 import { useAuth } from "../../hooks/useAuth";
-import { Avatar } from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex } from "@chakra-ui/react";
+import { Alert } from "../Alert";
 
 type User = {
   id: string;
@@ -16,19 +16,20 @@ type User = {
   avatar: string;
 };
 
-
-
 type ParamsTypes = {
   id: string;
 };
 
 function ListMembers() {
   const params: ParamsTypes = useParams();
-  const { loading, listMembers, listOfBaned, admin } = useRoom(params.id);
+  const { listMembers, listOfBaned, admin } = useRoom(params.id);
   const { user } = useAuth();
 
   async function handleUnblock(user: User) {
-    alert(user.name);
+    database.ref(`rooms/${params.id}/`).update({
+      listOfBaned: [...listOfBaned.filter((e) => e.id !== user.id)],
+      listMembers: [...listMembers, user],
+    });
   }
 
   async function handleBlock(user: User) {
@@ -52,51 +53,79 @@ function ListMembers() {
   const isAdmin = admin.id === user?.id;
   const [listState, setListState] = useState(true);
 
-  if (loading) {
-    return <div>carregando</div>;
-  }
-
   return (
-    <div className="list">
-      <div>
-        <button onClick={() => setListState(true)}>Membros</button>
+    <Box
+      flex="2"
+      mt="1rem"
+      bgColor="#EDEEFF"
+      borderRadius="8px"
+      border="2px"
+      padding="0.5rem"
+      className="list"
+    >
+      <Flex justify="space-evenly" gridGap="0.3rem" m="0 0 1rem 0">
+        <Button
+          flex="1"
+          colorScheme="telegram"
+          onClick={() => setListState(true)}
+        >
+          Membros
+        </Button>
 
-        <button onClick={() => setListState(false)}>Bloqueados</button>
-      </div>
+        <Button
+          flex="1"
+          colorScheme="telegram"
+          onClick={() => setListState(false)}
+        >
+          Bloqueados
+        </Button>
+      </Flex>
 
       {listState ? (
         <ul>
-          {listMembers.map((listUser, i) => (
+          {listMembers.map((userInfo, i) => (
             <li key={i}>
-              <Avatar src={listUser.avatar} alt={listUser.name} />
-              <p title={listUser.name}>{listUser.name}</p>
-              {isAdmin && listUser.id !== user?.id && (
-                <button onClick={() => handleBlock(listUser)}>
-                  <IoBan size="1.5rem" />
-                </button>
-              )}
-              {admin.id === listUser.id && (
-                <span title="Admin" className="admin">
-                  <RiAdminLine />
-                </span>
+              <Avatar src={userInfo.avatar} alt={userInfo.name} />
+              <p title={userInfo.name}>{userInfo.name}</p>
+
+              {isAdmin && userInfo.id !== user?.id ? (
+                <Alert
+                  icon={<IoBan size="1.5rem" />}
+                  func={() => handleBlock(userInfo)}
+                  text="Bloquear"
+                  user={userInfo}
+                />
+              ) : (
+                `${i === 0 ? "Admin" : "User"}`
               )}
             </li>
           ))}
         </ul>
       ) : (
         <ul>
-          {listOfBaned.map((user, index) => (
-            <li key={index}>
-              <img src={user.avatar} alt="" />
-              <p title={user.name}>{user.name}</p>
-              <button onClick={() => handleUnblock(user)}>
-                <CgUnblock size="1.5rem" />
-              </button>
-            </li>
-          ))}
+          {listOfBaned.length === 0 ? (
+            <p className="empty">Vazio </p>
+          ) : (
+            <>
+              {listOfBaned.map((userInfo, index) => (
+                <li key={index}>
+                  <Avatar src={userInfo.avatar} alt={userInfo.name} />
+                  <p title={userInfo.name}>{userInfo.name}</p>
+                  {isAdmin && (
+                    <Alert
+                      func={() => handleUnblock(userInfo)}
+                      icon={<CgUnblock size="1.5rem" />}
+                      text="Desbloquear"
+                      user={userInfo}
+                    />
+                  )}
+                </li>
+              ))}
+            </>
+          )}
         </ul>
       )}
-    </div>
+    </Box>
   );
 }
 

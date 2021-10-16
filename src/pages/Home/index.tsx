@@ -30,7 +30,7 @@ import { UserInfo } from "../../components/UserInfo";
 import "./styles.scss";
 
 function Home() {
-  const { user, signInWithGoogle } = useAuth();
+  const { user, signInWithGoogle,loading } = useAuth();
   const history = useHistory();
 
   const [room, setRoom] = useState("");
@@ -80,6 +80,7 @@ function Home() {
         authorName: user?.name,
         listMembers: [{ ...user }],
         listOfBaned: null,
+        pauseChat:false
       });
 
       toastState.description = `Sala ${room} Criada`;
@@ -109,10 +110,15 @@ function Home() {
             onClick={signInWithGoogle}
             colorScheme="blue"
             size="lg"
+            isLoading={!loading}
+            spinnerPlacement="start"
+            loadingText="Loading"
+
+
           >
             Fazer Login com o Google
           </Button>
-        ) : (
+         ) : ( 
           <Flex
             bgColor="#EDEEFF"
             padding="2rem"
@@ -148,7 +154,8 @@ function Home() {
 
             <Input
               type="text"
-              color="blackAlpha.900"
+                color="blackAlpha.900"
+                maxLength={30}
               background="gray.300"
               onChange={(e) => {
                 setRoom(e.target.value);

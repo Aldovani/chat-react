@@ -12,6 +12,8 @@ type AuthContextType = {
   user: User | undefined;
   signInWithGoogle: () => Promise<void>;
   SingOut: () => void;
+  loading:boolean
+
 };
 
 type AuthContextProviderProps = {
@@ -22,6 +24,7 @@ export const AuthContext = createContext({} as AuthContextType);
 
 function AuthContextProvider(props: AuthContextProviderProps) {
   const [user, setUser] = useState<User>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -38,6 +41,7 @@ function AuthContextProvider(props: AuthContextProviderProps) {
           avatar: photoURL,
           email:email
         });
+        setLoading(false)
       }
     });
     return () => {
@@ -62,6 +66,8 @@ function AuthContextProvider(props: AuthContextProviderProps) {
         id: uid,
         email
       });
+      
+      setLoading(false)
     }
   }
 
@@ -69,12 +75,16 @@ function AuthContextProvider(props: AuthContextProviderProps) {
     firebase
       .auth()
       .signOut()
-      .then(() => setUser(undefined))
+      .then(() => {
+        setUser(undefined)
+        setLoading(true)
+
+      })
       .catch();
   }
 
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle, SingOut }}>
+    <AuthContext.Provider value={{ user, signInWithGoogle, SingOut ,loading}}>
       {props.children}
     </AuthContext.Provider>
   );

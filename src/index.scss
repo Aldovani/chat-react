@@ -1,22 +1,28 @@
 *{
-  font: 400  var(--poppins)  ;
+  font: 400  var(--Lato)  ;
 }
 
 :root {
-  --background: #16161a;
-  --second: #72757e;
-  --stroke: #010101;
-  --green: #2cb67d;
-  --headline: #fffffe;
-  --paragraph: #94a1b2;
-  --button: #7f5af0;
-  --button-text: #fffffe;
-
+ 
   --poppins: "Poppins", sans-serif;
   --lato: "Lato", sans-serif;
 }
 
 #root {
-  min-height: 100vh;
-  background-image: linear-gradient(60deg, #29323c 0%, #485563 100%); 
+  background-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
+  height: 100vh; 
+}
+
+::-webkit-scrollbar{
+  width: 5px;
+}
+::-webkit-scrollbar-track{
+  background: white;
+  border-radius: 8px;
+}
+
+
+::-webkit-scrollbar-thumb{
+  background: gray;
+  border-radius: 10px;
 }

@@ -1,38 +1,26 @@
-ul{
-  padding-top: 1rem;
+ul {
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
   gap: 1rem;
-  align-items: flex-start;
+  max-height: 85vh;
 }
-li{
+li {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   width: 100%;
-  position: relative;
-img{
-  border-radius: 8px;
-  width: 70px;
-}  
 
-p{
-  max-width: 120px;
-  
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  p {
+    max-width: 120px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
 }
-
-button{
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-}
-}
-.admin{
-top: 0.5rem;
-right: 1rem;
-  position: absolute;
+.empty {
+  text-align: center;
+  font-size: 2rem;
 }

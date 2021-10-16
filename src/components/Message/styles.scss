@@ -6,23 +6,18 @@
   padding: 1rem;
   gap: 0.7rem;
   flex-direction: column;
-  background: var(--second);
-  margin:2rem  1rem;
-border-radius: 0.5rem;
+  background: #e0e2ff;
+  margin: 0.5rem 1rem;
+  border-radius: 0.5rem;
+
+  font: 400 var(--poppins);
 
   footer {
     display: flex;
     align-items: center;
     gap: 1rem;
-  }
-
-  span {
-    text-overflow: ellipsis;
-  }
-
-  img {
-    width: 30px;
-    clip-path: circle();
+    width: 100%;
+    justify-content: space-between;
   }
 
   .content-message {
@@ -30,5 +25,11 @@ border-radius: 0.5rem;
     word-break: break-all;
   }
 
-  
+  &.my {
+    align-self: flex-end;
+  }
+
+  &.admin {
+    background: #d0d2ee;
+  }
 }
