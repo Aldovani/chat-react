@@ -24,10 +24,10 @@ function UserInfo() {
     <>
       {user && (
         <div className="container-user-info">
-          <Avatar name={user.name} onClick={() => onOpen()} />
+          <Avatar title={user.name} src={user.avatar}  onClick={() => onOpen()} />
 
           <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
+            <ModalOverlay />  
             <ModalContent>
               <ModalHeader>User</ModalHeader>
               <ModalCloseButton />

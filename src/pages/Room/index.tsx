@@ -2,14 +2,12 @@ import { FormEvent, useState, useEffect, useRef } from "react";
 import {
   Textarea,
   Button,
-  Container,
-  Box,
   Flex,
   Spinner,
   Center,
-  Heading,
+  Grid,
 } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import { database } from "../../services/firebase";
 
@@ -20,17 +18,17 @@ import { Message } from "../../components/Message";
 import "./styles.scss";
 import { ListMembers } from "../../components/ListMembers";
 import { useAuth } from "../../hooks/useAuth";
-import ClipBoard from "../../components/ClipButton";
-
+import MenuChat from "../../components/MenuChat";
 type ParamsType = {
   id: string;
 };
 
 function Room() {
+  const history = useHistory();
   const { user } = useAuth();
   const [newMessage, setNewMessage] = useState("");
   const params: ParamsType = useParams();
-  const { messages, loading, title, admin, roomState } = useRoom(params.id);
+  const { messages, loading, admin, roomState } = useRoom(params.id);
 
   async function handleSendMessage(event: FormEvent) {
     event.preventDefault();
@@ -69,11 +67,28 @@ function Room() {
     if (messages[messages.length - 1]?.author.id === user?.id) {
       scrollToBottom("smooth");
     }
-  }, [messages, loading, user?.id]);
 
-  useEffect(() => {
-    scrollToBottom("auto");
-  }, []);
+    async function handleListRoom() {
+      const roomExists = await database.ref(`rooms/${params.id}`).get();
+      const ArrayListMemberBaned = roomExists.val().listOfBaned;
+      const ArrayListMember = roomExists.val().listMembers;
+      const isBanned = ArrayListMemberBaned?.some((e: any) => e.id === user?.id);
+      const notIncludeList = !ArrayListMember?.some((e: any) => e.id === user?.id);
+
+      if (isBanned) {
+        history.push("/");
+        return;
+      }
+
+      if (notIncludeList) {
+        await database.ref(`rooms/${params.id}`).update({
+          listMembers: [...ArrayListMember, { ...user }],
+        });
+      }
+    }
+
+    handleListRoom();
+  }, [messages, loading, user, params.id, history]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -86,85 +101,88 @@ function Room() {
   }
   const isAdmin = user?.id === admin.id;
 
+  function handleClearChat() {
+    database
+      .ref(`rooms/${params.id}/messages`)
+      .remove()
+      .then(() => {
+        alert("Chat limpo com sucesso");
+      })
+      .catch((err) => {
+        alert("Erro ao limpar o chat");
+      });
+  }
   return (
-    <Container as="main" maxW="container.lg">
-      <Flex gridGap="2" align="start">
-        <Box
-          borderRadius="8"
-          border="2px"
-          flex="5"
-          bgColor="#EDEEFF"
-          marginTop="1rem"
+    <Grid templateColumns="3.5fr 1fr" align="start">
+      <Grid
+        // border="2px"
+        bgColor="#EDEEFF"
+        templateRows=" 3fr .5fr"
+        className="container"
+      >
+        <Flex
+          ref={messagesEndRef}
+          direction="column"
+          align="flex-start"
+          overflowY="scroll"
+          className="scroll"
         >
-          <Flex direction="column" height="75vh">
-            <Flex
-              borderBottom="2px"
-              align="center"
-              justifyContent="space-around"
-            >
-              <Heading>{title}</Heading>
-           
-              <ClipBoard id={ params.id}/>
-            </Flex>
-
-            <Flex
-              ref={messagesEndRef}
-              direction="column"
-              align="flex-start"
-              overflowY="scroll"
-            className="scroll"
-            >
-              {messages.map((message) => (
-                <Message key={message.id} user={user} message={message} />
-              ))}
-            </Flex>
-          </Flex>
-          <form onSubmit={handleSendMessage}>
-            <Textarea
-              spellCheck
-              display="block"
-              m="0 auto"
-              width="98%"
+          {messages.map((message) => (
+            <Message key={message.id} user={user} message={message} />
+          ))}
+        </Flex>
+        <form onSubmit={handleSendMessage}>
+          <Textarea
+            spellCheck
+            display="block"
+            m=" auto"
+            width="98%"
+            disabled={roomState && !isAdmin}
+            isRequired
+            onChange={(e) => setNewMessage(e.target.value)}
+            value={newMessage}
+            resize="none"
+            placeholder="Digite sua mensagem"
+            maxLength={300}
+          ></Textarea>
+          <Flex
+            padding="0.5rem"
+            gridGap="1rem"
+            justifyContent="space-evenly"
+            alignItems="stretch"
+          >
+            <Button
+              flex="1"
+              colorScheme="telegram"
+              size="md"
+              type="submit"
               disabled={roomState && !isAdmin}
-              isRequired
-              onChange={(e) => setNewMessage(e.target.value)}
-              value={newMessage}
-              resize="none"
-              placeholder="Digite sua mensagem"
-              maxLength={300}
-            ></Textarea>
-            <Flex
-              padding="0.5rem"
-              gridGap="1rem"
-              justifyContent="space-evenly"
-              alignItems="stretch"
             >
-              <Button
-                flex="1"
-                colorScheme="telegram"
-                size="md"
-                type="submit"
-                disabled={roomState && !isAdmin}
-              >
-                {roomState && !isAdmin ? `Chat Pausado pelo ADM` : "Enviar"}
-              </Button>
-              {user?.id === admin.id && (
-                <Button
-                  Button
-                  onClick={pauseChat}
-                  flex="1"
-                  colorScheme={!roomState ? "yellow" : "orange"}
-                  size="md"
-                >
-                  {!roomState ? "Pausar" : "Despausar"}
-                </Button>
-              )}
-            </Flex>
-          </form>
-        </Box>
-        <ListMembers />
-      </Flex>
-    </Container>
+              {roomState && !isAdmin ? `Chat Pausado pelo ADM` : "Enviar"}
+            </Button>
+            {user?.id === admin.id && (
+              // <Button
+              //   Button
+              //   onClick={}
+
+              //   colorScheme={!roomState ? "yellow" : "orange"}
+              //   size="md"
+              // >
+
+              // </Button>
+              <MenuChat
+                actions={{
+                  pauseChat: pauseChat,
+                  clearChat: handleClearChat,
+                }}
+              />
+            )}
+          </Flex>
+        </form>
+      </Grid>
+
+      <ListMembers />
+    </Grid>
   );
 }
 

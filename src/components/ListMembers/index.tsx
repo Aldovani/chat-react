@@ -55,13 +55,11 @@ function ListMembers() {
 
   return (
     <Box
-      flex="2"
-      mt="1rem"
       bgColor="#EDEEFF"
-      borderRadius="8px"
-      border="2px"
+      borderLeft="2px solid"
       padding="0.5rem"
       className="list"
+      height="100%"
     >
       <Flex justify="space-evenly" gridGap="0.3rem" m="0 0 1rem 0">
         <Button

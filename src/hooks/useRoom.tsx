@@ -15,6 +15,7 @@ type MessagesType = {
 };
 
 function useRoom(params: string) {
+
   const [messages, setMessages] = useState([{} as MessagesType]);
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
@@ -22,7 +23,6 @@ function useRoom(params: string) {
   const [listMembers, setListMembers] = useState([{} as User]);
   const [listOfBaned, setListOfBaned] = useState([{} as User]);
   const [admin, setAdmin] = useState({} as { id: string; name: string });
-
   useEffect(() => {
     const roomRef = database.ref(`rooms/${params}`);
 
@@ -42,6 +42,7 @@ function useRoom(params: string) {
         }
       );
 
+     
       setTitle(databaseRoom?.title);
       setAdmin({ id: databaseRoom?.authorId, name: databaseRoom?.authorName });
       setMessages(parsedMessage);
@@ -50,9 +51,7 @@ function useRoom(params: string) {
       setRoomState(databaseRoom?.pauseChat);
       setLoading(false);
     });
-    return () => {
-      roomRef.off("value");
-    };
+
   }, [params]);
 
   return {

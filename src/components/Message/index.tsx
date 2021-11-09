@@ -12,7 +12,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -49,7 +48,9 @@ function MessageItem({ message, user }: MessagesType) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function handleDeleteMessage(key: string | undefined) {
-    await database.ref(`rooms/${id}/messages/${key}`).update({});
+    await database.ref(`rooms/${id}/messages/${key}`).remove().then(() => {
+      
+    });
   }
 
   return (
@@ -106,15 +107,13 @@ function MessageItem({ message, user }: MessagesType) {
               Fechar
             </Button>
 
-            <Tooltip hasArrow label="Função desabilitada " bg="red.600">
               <Button
                 colorScheme="red"
                 variant="outline"
-                // onClick={() => handleDeleteMessage(currentMessage?.id)}
+                onClick={() => handleDeleteMessage(currentMessage?.id)}
               >
                 Deletar
               </Button>
-            </Tooltip>
           </ModalFooter>
         </ModalContent>
       </Modal>
